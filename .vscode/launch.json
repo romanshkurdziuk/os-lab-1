@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Запустить", // Это имя может быть любым
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "os-lab-1/Creator.exe", // Путь к твоей программе
+            "args": [
+                "employees.bin",
+                "3"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe", // Путь может отличаться
+            "setupCommands": [
+                {
+                    "description": "Включить автоматическое форматирование для gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: g++.exe build active file" // Эта задача компилирует файл перед запуском
+        }
+    ]
+}
