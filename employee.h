@@ -1,5 +1,6 @@
 #ifndef EMPLOYEE_H
 #define EMPLOYEE_H
+#include <iostream>
 #include <fstream>
 #pragma pack(push, 1)
 
@@ -10,15 +11,15 @@ struct employee
     char name[10];
     double hours;
 
-    void write(ofstream& outFile)
+    void write(ostream& os)
     {
-        outFile.write((char*)this, sizeof(employee));
+        os.write((char*)this, sizeof(employee));
     }
 
-    ifstream& read(ifstream& inFile)
+    istream& read(istream& is)
     {
-        inFile.read((char*)this, sizeof(employee));
-        return inFile;
+        is.read((char*)this, sizeof(employee));
+        return is;
     }
 
     bool operator<(const employee& other) const
