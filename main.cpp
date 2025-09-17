@@ -21,33 +21,18 @@ void PrintFile(const string& fileName)
     file.close();
 }
 
-int main() {
-    string binFileName;
-    int recordsCount;
-
-    cout << "Enter binary file name: ";
-    cin >> binFileName;
-
-    cout << "Enter records count: ";
-    cin >> recordsCount;
-
-    string commandLineStr = "Creator.exe " + binFileName + " " + to_string(recordsCount);
-    cout << "\nCommand to execute: " << commandLineStr << endl;
-    
-    char commandLine[200];
-    strcpy(commandLine, commandLineStr.c_str());
-
+bool createProcessAndWait(const string& command)
+{
+    char cmd[200];
+    strcpy(cmd, command.c_str());
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
-
     ZeroMemory(&si, sizeof(STARTUPINFOA));
     si.cb = sizeof(STARTUPINFOA);
     ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
-
-    cout << "Starting Creator process..." << endl;
     bool isProcessCreated = CreateProcessA(
         NULL,
-        commandLine,
+        cmd,
         NULL,
         NULL,
         FALSE,
@@ -57,19 +42,38 @@ int main() {
         &si,
         &pi
     );
-
     if (!isProcessCreated) {
-        cout << "Failed to create Creator process. Error code: " << GetLastError() << endl;
+        cout << "Failed to create process for command: " << command << ". Error code: " << GetLastError() << endl;
+        return false; 
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    return true;
+
+}
+
+int main() {
+    string binFileCreatorCmdStr;
+    int recordsCount;
+
+    cout << "Enter binary file name: ";
+    cin >> binFileCreatorCmdStr;
+
+    cout << "Enter records count: ";
+    cin >> recordsCount;
+
+    string commandLineStr = "Creator.exe " + binFileCreatorCmdStr + " " + to_string(recordsCount);
+    bool creatorSuccess = createProcessAndWait(commandLineStr);
+    if (!creatorSuccess) 
+    {
+        cout << "Failed to create Creator process." << endl;
         return 1;
     }
 
-    cout << "Creator process started successfully." << endl;
-    WaitForSingleObject(pi.hProcess, INFINITE);
-    cout << "\nCreator process finished." << endl;
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    ifstream inFile(binFileName, ios::binary);
-    PrintFile(binFileName);
+    ifstream inFile(binFileCreatorCmdStr, ios::binary);
+    PrintFile(binFileCreatorCmdStr);
 
     string reportFileName;
     double hourlyRate;
@@ -79,38 +83,14 @@ int main() {
 
     cout << "Enter the hourly rate: ";
     cin >> hourlyRate;
-    string reporterCmdStr = "Reporter.exe " + binFileName + " " + reportFileName + " " + to_string(hourlyRate);
-    char reporterCmd[200];
-    strcpy(reporterCmd, reporterCmdStr.c_str());
+    string reporterCmdStr = "Reporter.exe " + binFileCreatorCmdStr + " " + reportFileName + " " + to_string(hourlyRate);
 
-    STARTUPINFOA siReporter;
-    PROCESS_INFORMATION piReporter;
-
-    ZeroMemory(&siReporter, sizeof(STARTUPINFOA));
-    siReporter.cb = sizeof(STARTUPINFOA);
-    ZeroMemory(&piReporter, sizeof(PROCESS_INFORMATION));
-
-    CreateProcessA(
-        NULL,
-        reporterCmd,
-        NULL,
-        NULL,
-        FALSE,
-        CREATE_NEW_CONSOLE,
-        NULL,
-        NULL,
-        &siReporter,
-        &piReporter
-    );
-    cout << "Waiting for Reporter process to finish..." << endl;
-    WaitForSingleObject(piReporter.hProcess, INFINITE);
-    CloseHandle(piReporter.hProcess);
-    CloseHandle(piReporter.hThread);
-    cout << "Reporter process finished." << endl;
-
+    bool reporterSuccess = createProcessAndWait(reporterCmdStr);
+    if (!reporterSuccess) 
+    {
+        cout << "Failed to create Reporter process." << endl;
+        return 1;
+    }
     PrintFile(reportFileName);
-
-    cout << "Main process continues..." << endl;
-
     return 0;
 }

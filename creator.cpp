@@ -21,7 +21,7 @@ using namespace std;
         cout << "Enter hours worked: ";
         cin >> emp.hours;
         file.write((char*)&emp, sizeof(employee));
-        cout << "-----------------------------------------" << endl;
+        cout << "-------------------------------" << endl;
     }
     file.close();
     return 0;
