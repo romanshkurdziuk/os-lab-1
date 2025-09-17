@@ -20,7 +20,7 @@ using namespace std;
         cin >> emp.name;
         cout << "Enter hours worked: ";
         cin >> emp.hours;
-        emp.write(file);
+        file.write((char*)&emp, sizeof(employee));
         cout << "-------------------------------" << endl;
     }
     file.close();
