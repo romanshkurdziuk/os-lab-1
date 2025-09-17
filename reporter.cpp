@@ -6,10 +6,6 @@
 #include <iomanip>   
 #include "employee.h" 
 using namespace std;
-bool compareEmployees(const employee& a, const employee& b) 
-{
-    return a.num < b.num; 
-}
 
 int main(int argc, char* argv[]) {
    if (argc != 4) {
@@ -29,11 +25,12 @@ int main(int argc, char* argv[]) {
 
     vector<employee> employees;
     employee temp;
-    while (inFile.read((char*)&temp, sizeof(employee))) {
+    while (temp.read(inFile))
+    {
         employees.push_back(temp);
     }
     inFile.close();
-    sort(employees.begin(), employees.end(), compareEmployees);
+    sort(employees.begin(), employees.end());
 
     ofstream outFile(reportFileName);
     if (!outFile) {
