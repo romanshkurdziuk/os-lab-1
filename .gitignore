@@ -7,4 +7,8 @@
 
 # Бинарные данные и отчеты
 *.bin
-*.txt
+# Папка для сборки CMake
+/build/
+
+# Файлы, созданные CMake в папке с googletest
+/googletest/build/
